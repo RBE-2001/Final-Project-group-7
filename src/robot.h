@@ -3,7 +3,7 @@
 #include "chassis.h"
 #include <vector>
 #include "Romi32U4Buttons.h"
-//TEST Commit
+
 class Robot
 {
 protected:
@@ -32,6 +32,7 @@ protected:
 
     unsigned int point_index = 0;
 
+    // TODO: update to go around  optical
     std::vector<Pose> points = {
         {30, 30, 0},
         {60, 0, 0},

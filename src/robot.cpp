@@ -4,14 +4,9 @@ void Robot::InitializeRobot(void)
 {
     chassis.InititalizeChassis();
     Serial.println("Robot initialized.");
-    /**
-     * TODO: Set pin 13 HIGH when navigating and LOW when destination is reached.
-     * Need to set as OUTPUT here.
-     */
+
     pinMode(13, OUTPUT);
     digitalWrite(13, LOW);
-    // if button b
-    // SetDestination(points[0]);
 }
 
 void Robot::EnterIdleState(void)
