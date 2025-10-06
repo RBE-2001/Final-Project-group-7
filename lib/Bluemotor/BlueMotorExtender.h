@@ -16,6 +16,6 @@ private:
     static short getState(bool encA, bool encB);
     const int tolerance = 3;
     const int PWMOutPin = 6;//11; // motor speed
-    const int AIN2 = 20;//4; // h bridge input 2
-    const int AIN1 = 21;//13; // h bridge input 1
+    const int AIN2E = 20;//4; // h bridge input 2
+    const int AIN1E = 21;//13; // h bridge input 1
 };

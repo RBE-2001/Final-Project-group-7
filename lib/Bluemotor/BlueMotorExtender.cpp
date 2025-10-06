@@ -1,11 +1,11 @@
 #include <Arduino.h>
 #include <BlueMotorExtender.h>
 
-long oldValue = 0;
-long newValue;
-long count = 0;
-unsigned time = 0;
-short previousState = 0; // uses numbs 0-3 to represent the 4 possible states
+long oldValueE = 0;
+long newValueE;
+long countE = 0;
+unsigned timeE = 0;
+short previousStateE = 0; // uses numbs 0-3 to represent the 4 possible states
 
 // Moved becues prof told us to //TEST
 const int ENCA = 2; 
@@ -18,15 +18,15 @@ BlueMotorExtender::BlueMotorExtender()
 void BlueMotorExtender::setup()
 {
     pinMode(PWMOutPin, OUTPUT);
-    pinMode(AIN2, OUTPUT);
-    pinMode(AIN1, OUTPUT);
+    pinMode(AIN2E, OUTPUT);
+    pinMode(AIN1E, OUTPUT);
     pinMode(ENCA, INPUT);
     pinMode(ENCB, INPUT);
     // TCCR1A = 0xA8; //0b10101000; //gcl: added OCR1C for adding a third PWM on pin 11
     // TCCR1B = 0x11; //0b00010001;
     // ICR1 = 400;
     // OCR1C = 0;
-    // Stop Timer 4
+    // Stop timeEr 4
 
     attachInterrupt(digitalPinToInterrupt(ENCA), isr, CHANGE); // interrupt on both channels
     attachInterrupt(digitalPinToInterrupt(ENCB), isr, CHANGE);
@@ -35,17 +35,17 @@ void BlueMotorExtender::setup()
 
 long BlueMotorExtender::getPosition()
 {
-    long tempCount = 0;
+    long tempcountE = 0;
     noInterrupts();
-    tempCount = count;
+    tempcountE = countE;
     interrupts();
-    return tempCount;
+    return tempcountE;
 }
 
 void BlueMotorExtender::reset()
 {
     noInterrupts();
-    count = 0;
+    countE = 0;
     interrupts();
 }
 
@@ -56,17 +56,17 @@ void BlueMotorExtender::isr()
     short s = getState(digitalRead(ENCA), digitalRead(ENCB));
 
     // --- Compute difference with previous state ---
-    short diff = (s-previousState+4)%4;
+    short diff = (s-previousStateE+4)%4;
 
     // --- Handle valid movement only ---
     if (diff == 1)
-        count--; // clockwise negative
+        countE--; // clockwise negative
     else if (diff == 3)
-        count++; // counterclockwise positive
+        countE++; // countEerclockwise positive
     // diff == 0 → no movement, ignore
     // diff == 2 → invalid transition (e.g., bounce or skipped step), ignore
     
-    previousState = s; // save state for next time
+    previousStateE = s; // save state for next timeE
 }
 
 short BlueMotorExtender::getState(bool encA, bool encB)
@@ -96,15 +96,15 @@ void BlueMotorExtender::setEffort(int effort, bool clockwise)
 {
     if (clockwise)
     {
-        digitalWrite(AIN1, HIGH);
-        digitalWrite(AIN2, LOW);
+        digitalWrite(AIN1E, HIGH);
+        digitalWrite(AIN2E, LOW);
     }
     else
     {
-        digitalWrite(AIN1, LOW);
-        digitalWrite(AIN2, HIGH);
+        digitalWrite(AIN1E, LOW);
+        digitalWrite(AIN2E, HIGH);
     }
-    analogWrite(6, effort/400.0 * 255.0); // duty 200/255
+    analogWrite(PWMOutPin, effort/400.0 * 255.0); // duty 200/255
 
 }
 

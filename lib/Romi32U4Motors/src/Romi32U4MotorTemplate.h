@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Arduino.h>
+#include <FastGPIO.h>
 
 // define the motor pins here
 #define PWM_L 10

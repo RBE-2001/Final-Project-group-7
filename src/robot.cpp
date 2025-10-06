@@ -43,13 +43,13 @@ void Robot::RobotLoop(void)
     //     extender.ExtendCommand();
     // }
 
-    motor1.setEffort(300);
-    motor1.setEffort(100);
+    motor1.setEffort(350);
+    motor2.setEffort(350);
     if ((now = millis()) > timeToPrint)
     {
       timeToPrint = now + sampleTime;
       newPosition = motor1.getPosition();
-      speedInRPM = (newPosition - oldPosition)/1080 * (60000 / sampleTime);
+      speedInRPM = (newPosition - oldPosition)/1080.0 * (60000.0 / sampleTime);
       Serial.print(now);
       Serial.print("          ");
       Serial.print(newPosition);
