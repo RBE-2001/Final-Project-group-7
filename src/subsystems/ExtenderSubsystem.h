@@ -1,8 +1,14 @@
 #pragma once
 #include "Subsystem.h"
+#include "DualBlueMotor.h"
 
 class ExtenderSubsystem : public Subsystem {
 public:
+    DualBlueMotor dualMotor
+    ExtenderSubsystem(DualBlueMotor dm) {
+        dualMotor = dm
+    }
+    
     void Init() override;
     void Update() override;
     bool IsDone() const override;
@@ -26,4 +32,7 @@ private:
     void Idle();
     void Extend();
     void Retract();
+
+    DualBlueMotor dualMotor = DualBlueMotor();
+    
 };

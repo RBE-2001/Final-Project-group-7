@@ -7,17 +7,24 @@
 #include "subsystems/GripperSubsystem.h"
 #include "subsystems/LifterSubsystem.h"
 
+#include "DualBlueMotor.h"
+
 class Robot
 {
 protected:
     // For managing key presses
     String keyString;
 
+    // // Constructor: pwm pin, motor pins + encoder pins
+    // DualBlueMotor(int pwmPin,
+    //                     int m1_ain1, int m1_ain2, int m1_encA, int m1_encB,
+    //                     int m2_ain1, int m2_ain2, int m2_encA, int m2_encB);
+    DualBlueMotor dualMotor = DualBlueMotor(0);
     // Subsytems
     ChassisSubsystem chassis;
-    ExtenderSubsystem extender;
+    ExtenderSubsystem extender = extender(dualMotor);
     GripperSubsystem gripper;
-    LifterSubsystem lifter;
+    LifterSubsystem lifter = lifter(dualMotor);
 
 public:
     Robot(void) {keyString.reserve(10);}

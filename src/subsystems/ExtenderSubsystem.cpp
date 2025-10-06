@@ -33,6 +33,7 @@ bool ExtenderSubsystem::IsDone() const {
 // --------- States ---------
 void ExtenderSubsystem::Idle() {
     //TODO: stop motors
+    
 }
 
 void ExtenderSubsystem::Extend() {
