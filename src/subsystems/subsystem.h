@@ -1,6 +1,9 @@
 // Subsystem.h
 #pragma once
 
+#include "Romi32U4Buttons.h"
+#include <Arduino.h>
+
 class Subsystem {
 public:
     virtual ~Subsystem() = default;

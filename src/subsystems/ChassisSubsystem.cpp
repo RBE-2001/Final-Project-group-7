@@ -3,6 +3,51 @@
  */
 #include "Nav.h"
 
+void Robot::InitializeRobot(void)
+{
+    chassis.InititalizeChassis();
+    Serial.println("Robot initialized.");
+
+    pinMode(13, OUTPUT);
+    digitalWrite(13, LOW);
+}
+
+void Robot::EnterIdleState(void)
+{
+    chassis.Stop();
+
+    Serial.println("-> IDLE");
+    robotState = ROBOT_IDLE;
+}
+
+Twist velocity;
+    if(chassis.ChassisLoop(velocity))
+    {
+        // We do FK regardless of state
+        UpdatePose(velocity);
+        
+        if (buttonA.getSingleDebouncedPress()) {
+            delay(250); //wait so you can move your finger
+            SetDestination(points[point_index]);
+        }
+
+        /**
+         * Here, we break with tradition and only call these functions if we're in the 
+         * DRIVE_TO_POINT state. CheckReachedDestination() is expensive, so we don't want
+         * to do all the maths when we don't need to.
+         * 
+         * While we're at it, we'll toss DriveToPoint() in, as well.
+         */ 
+        if(robotState == ROBOT_DRIVE_TO_POINT)
+        {
+            DriveToPoint();
+            if(CheckReachedDestination()) {
+                HandleDestination();
+            }
+        }
+    }
+
+    
 void Nav::UpdatePose(const Twist &twist)
 {
     // Assume twist is in cm/s and rad/s, and we call this at 50Hz

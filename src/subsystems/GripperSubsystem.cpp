@@ -1,12 +1,15 @@
 #include "GripperSubsystem.h"
 
-// Initialize the gripper
+// --------- Susytems Functions ---------
 void GripperSubsystem::Init() {
     currentState = State::Idle;
     isGripperOpen = false;
+
+#ifdef __SUBSYSTEM_DEBUG
+    Serial.println("GripperSubsystem -> Initilized");
+#endif
 }
 
-// Update is called in the control loop
 void GripperSubsystem::Update() {
     switch (currentState) {
         case State::Idle:
@@ -14,56 +17,64 @@ void GripperSubsystem::Update() {
             break;
 
         case State::Opening:
-            if (!isGripperOpen) {
-                Open();
-            }
+            Open();
             break;
 
         case State::Closing:
-            if (isGripperOpen) {
-                Close();
-            }
+            Close();
             break;
     }
 }
 
-// Check if the gripper is done
 bool GripperSubsystem::IsDone() const {
     return currentState == State::Idle;
 }
 
-// Idle state
+// --------- States ---------
 void GripperSubsystem::Idle() {
-    // TODO: Code for idle State, Stop servo
+#ifdef __SUBSYSTEM_DEBUG
+    Serial.println("GripperSubsystem -> IDLE");
+#endif
+    //TODO: stop motors
 }
 
-// Trigger opening
 void GripperSubsystem::Open() {
-    if (currentState == State::Opening && !isGripperOpen) {
-        // TODO: Code to open gripper
+#ifdef __SUBSYSTEM_DEBUG
+    Serial.println("GripperSubsystem -> Open");
+#endif
+    // TODO: replace with open gripper code
 
-        // sets state to idle when griper is open
-        if (true) { // replace true with logic for when gripper is open
-            SetState(State::Idle);
-            isGripperOpen = true;
-        }
+    if (true) { //TODO: replace true with logic for when gripper is open
+        isGripperOpen = true;
+        SetState(State::Idle);  // go back to idle when done
     }
 }
 
-// Trigger closing
 void GripperSubsystem::Close() {
-    if (currentState == State::Idle && isGripperOpen) {
-        // TODO: Code to closed gripper
-        
-        // sets state to idle when griper is closed
-        if (true) { // replace true with logic for when gripper is closed
-            SetState(State::Idle);
-            isGripperOpen = false;
-        }
+#ifdef __SUBSYSTEM_DEBUG
+    Serial.println("GripperSubsystem -> Closed");
+#endif
+    // TODO: replace with close gripper code
+
+    if (true) { //TODO: replace true with logic for when gripper is closed
+        isGripperOpen = false;
+        SetState(State::Idle);  // go back to idle when done
     }
 }
 
-// Internal state change
 void GripperSubsystem::SetState(State newState) {
     currentState = newState;
+}
+
+// --------- Commands ---------
+void GripperSubsystem::OpenCommand() {
+    if (currentState == State::Idle && !isGripperOpen) {
+        SetState(State::Opening);
+    }
+}
+
+void GripperSubsystem::CloseCommand() {
+    if (currentState == State::Idle && isGripperOpen) {
+        SetState(State::Closing);
+    }
 }

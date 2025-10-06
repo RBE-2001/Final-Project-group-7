@@ -7,19 +7,21 @@ public:
     void Update() override;
     bool IsDone() const override;
 
+    void OpenCommand();   // trigger opening
+    void CloseCommand();  // trigger closing
+
+private:
     enum class State {
         Idle,
         Opening,
         Closing
     };
-    void SetState(State newState);
 
-private:
     State currentState = State::Idle;
-    bool isGripperOpen = false;  // Tracks physical state
+    bool isGripperOpen = false;
 
-    // Code to controll griper
-    void Open();   // Trigger opening
-    void Close();  // Trigger closing
+    void SetState(State newState);
     void Idle();
+    void Open();
+    void Close();
 };
