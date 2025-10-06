@@ -2,15 +2,14 @@
 
 void Robot::InitializeRobot(void)
 {
-    Serial.println("Robot initialized.");
+    extender.Init();
+    gripper.Init();
+    lifter.Init();
 
     pinMode(13, OUTPUT);
     digitalWrite(13, LOW);
-}
-
-void Robot::EnterIdleState(void)
-{
-    Serial.println("-> IDLE");
+    
+    Serial.println("Robot initialized.");
 }
 
 Romi32U4ButtonA buttonA;
@@ -22,5 +21,7 @@ Romi32U4ButtonB buttonB;
 */
 void Robot::RobotLoop(void) 
 {
-
+    extender.Update();
+    gripper.Update();
+    lifter.Update();
 }
