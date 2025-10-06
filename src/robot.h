@@ -2,12 +2,13 @@
 
 #include "Romi32U4Buttons.h"
 
-#include "subsystems/ChassisSubsystem.h"
+// #include "subsystems/ChassisSubsystem.h"
 #include "subsystems/ExtenderSubsystem.h"
 #include "subsystems/GripperSubsystem.h"
 #include "subsystems/LifterSubsystem.h"
 
-#include "DualBlueMotor.h"
+#include "BlueMotorLifter.h"
+#include "BlueMotorExtender.h"
 
 class Robot
 {
@@ -21,9 +22,11 @@ protected:
     //                     int m2_ain1, int m2_ain2, int m2_encA, int m2_encB);
     // Motor 1 pins ain1=4 ain2=13 encA=0, encB=1
     // Motor 2 pins bin1=20 bin2=21 encA=2, encB=3
-    DualBlueMotor dualMotor = DualBlueMotor(11, 4, 13, 0, 1, 20, 21, 2 ,3);
+
+    BlueMotorLifter motor1;
+    BlueMotorExtender motor2;
     // Subsytems
-    ChassisSubsystem chassis;
+    // ChassisSubsystem chassis;
     ExtenderSubsystem extender;
     GripperSubsystem gripper;
     LifterSubsystem lifter;

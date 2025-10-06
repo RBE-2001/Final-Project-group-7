@@ -1,6 +1,5 @@
 #pragma once
 #include "Subsystem.h"
-#include "DualBlueMotor.h"
 
 class ExtenderSubsystem : public Subsystem {
 public:
