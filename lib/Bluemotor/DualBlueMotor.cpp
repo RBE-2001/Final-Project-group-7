@@ -20,7 +20,6 @@ DualBlueMotor::DualBlueMotor(int pwmPin,
     motor1.encB = m1_encB;
     motor1.count = 0;
     motor1.previousState = 0;
-    motor1.targetPos = 0;
     motor1.state = IDLE;
     motor1.dir = HOLD;
 
@@ -36,7 +35,6 @@ DualBlueMotor::DualBlueMotor(int pwmPin,
     motor2.encB = m2_encB;
     motor2.count = 0;
     motor2.previousState = 0;
-    motor2.targetPos = 0;
     motor2.state = IDLE;
     motor2.dir = HOLD;
 
@@ -94,29 +92,55 @@ bool DualBlueMotor::moveToPosition(int motorNum, long target) {
     Motor &m = (motorNum == 1) ? motor1 : motor2;
     Motor &otherMotor = (motorNum == 1) ? motor2 : motor1;
 
-    noInterrupts();
-    m.targetPos = target;
-    long current = m.count;
-    interrupts();
-
     // Only move if the other motor is idle
     if (otherMotor.state == IDLE) {
-        // TODO replace with PID
-        if (current < m.targetPos) {
-            setMotorDirection(m, Direction::FORWARD);
-            setEffort(m, 200); // forward
-            m.state = MOVING;
-        } else if (current > m.targetPos) {
-            setMotorDirection(m, Direction::BACKWARD);
-            setEffort(m, 200); // backward
-            m.state = MOVING;
-        } else {
-            setMotorDirection(m, Direction::HOLD); // stop
-            return true; // target reached
-        }
+        PIDMotor(m, target, PID(1, 0, 0)) //TODO: TUNE PID and for both motors
     }
 
     return false; // still moving or waiting for other motor
+}
+
+bool DualBlueMotor::PIDMotor(Motor &m, long target PID pid) {
+    noInterrupts();
+    long current = m.count;
+    interrupts();
+
+    // Calculate error
+    long error = target - current;
+
+    // Motor reached target
+    if (abs(error) < pid.tolorance) {
+        setMotorDirection(m, Direction::HOLD); // stop motor
+        setEffort(m, 0);
+        m.state = IDLE;
+
+        // Reset PID state
+        pid.integral = 0;
+        pid.lastError = 0;
+        return true;
+    }
+
+    // PID calculations
+    pid.integral += error;                  // integral term
+    long derivative = error - pid.lastError; // derivative term
+    float output = pid.Kp * error + pid.Ki * pid.integral + pid.Kd * derivative;
+
+    pid.lastError = error;
+
+    // Determine direction
+    if (output > 0) {
+        setMotorDirection(m, Direction::FORWARD);
+    } else {
+        setMotorDirection(m, Direction::BACKWARD);
+        output = -output; // make positive for PWM
+    }
+
+    // Constrain PWM to effert bounds
+    int pwmEffort = constrain((int)output, 0, 400);
+    setEffort(m, pwmEffort);
+
+    m.state = MOVING;
+    return false; // target not yet reached
 }
 
 // Encoder ISRs
@@ -129,29 +153,6 @@ void DualBlueMotor::encoder2ISR() {
 }
 
 // --- Private helpers ---
-
-void DualBlueMotor::updateMotor(Motor &m, Motor &otherMotor) {
-    // Only move if the other motor is idle
-    if (otherMotor.state != IDLE) return;
-
-    if (m.state == MOVING) {
-        long current;
-        noInterrupts();
-        current = m.count;
-        interrupts();
-
-        if (current < m.targetPos) {
-            setEffort(m, 200, false); // forward
-        } else if (current > m.targetPos) {
-            setEffort(m, 200, true); // backward
-        } else {
-            setEffort(m, 0, false); // stop
-            m.state = IDLE;
-        }
-    }
-}
-
-
 void DualBlueMotor::updateEncoder(Motor &m) {
     bool a = digitalRead(m.encA);
     bool b = digitalRead(m.encB);

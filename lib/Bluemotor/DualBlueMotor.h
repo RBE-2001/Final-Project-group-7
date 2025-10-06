@@ -11,7 +11,6 @@ public:
         int encA, encB;          // Encoder pins
         volatile long count;     // Encoder count
         short previousState;     // Previous encoder state
-        long targetPos;          // Target position
         State state;             // IDLE or MOVING
         Direction dir;           // Current direction
     };
@@ -42,4 +41,15 @@ private:
     void setMotorDirection(Motor &m, Direction dir);
     void updateEncoder(Motor &m);
     short getState(bool encA, bool encB);
+
+    bool PIDMotor(Motor &m, long target)
+};
+
+struct PID {
+    float Kp;
+    float Ki;
+    float Kd;
+    float tolorance = 10;
+    long integral = 0;
+    long lastError = 0;
 };

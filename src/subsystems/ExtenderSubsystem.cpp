@@ -33,12 +33,13 @@ bool ExtenderSubsystem::IsDone() const {
 // --------- States ---------
 void ExtenderSubsystem::Idle() {
     //TODO: stop motors
-    
+    dualMotor.setMotorMode(1, dualMotor.HOLD)
+
 }
 
 void ExtenderSubsystem::Extend() {
     // TODO: replace with Extend extending code
-
+    dualMotor.moveToPosition(1, 10)
     if (true) { //TODO: replace true with logic for when Extender is extended
         isExtended = true;
         SetState(State::Idle);  // go back to idle when done
@@ -47,7 +48,7 @@ void ExtenderSubsystem::Extend() {
 
 void ExtenderSubsystem::Retract() {
     // TODO: replace with Extend Retract code
-
+    dualMotor.moveToPosition(1, -10)
     if (true) { //TODO: replace true with logic for when Extender is Retracted
         isExtended = false;
         SetState(State::Idle);  // go back to idle when done
