@@ -26,4 +26,9 @@ void Robot::RobotLoop(void)
     extender.Update();
     gripper.Update();
     lifter.Update();
+
+    if (buttonA.getSingleDebouncedPress()) {
+        delay(250); //wait so you can move your finger
+        extender.ExtendCommand()
+    }
 }

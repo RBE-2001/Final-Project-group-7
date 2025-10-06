@@ -69,6 +69,7 @@ void GripperSubsystem::SetState(State newState) {
 }
 
 // --------- Commands ---------
+
 void GripperSubsystem::OpenCommand() {
     if (currentState == State::Idle && !isGripperOpen) {
         SetState(State::Opening);
