@@ -1,9 +1,9 @@
 /**
  * robot-nav.cpp is where you should put navigation routines.
  */
-#include "robot.h"
+#include "Nav.h"
 
-void Robot::UpdatePose(const Twist &twist)
+void Nav::UpdatePose(const Twist &twist)
 {
     // Assume twist is in cm/s and rad/s, and we call this at 50Hz
     float deltaTime = 0.020; // Default to control loop period
@@ -30,7 +30,7 @@ void Robot::UpdatePose(const Twist &twist)
 /**
  * Sets a destination in the lab frame.
  */
-void Robot::SetDestination(const Pose &dest)
+void Nav::SetDestination(const Pose &dest)
 {
     digitalWrite(13, HIGH);
     
@@ -49,7 +49,7 @@ void Robot::SetDestination(const Pose &dest)
  * 
  * Returns true if we're within some small threshold of the destination.
  */
-bool Robot::CheckReachedDestination(void)
+bool Nav::CheckReachedDestination(void)
 {
     bool retVal = true;
     const float errorDistance = 3.0; //cm
@@ -69,7 +69,7 @@ bool Robot::CheckReachedDestination(void)
  * 
  * This should set the motor efforts to drive to the point. It should not block.
  */
-void Robot::DriveToPoint(void)
+void Nav::DriveToPoint(void)
 {
     if(robotState == ROBOT_DRIVE_TO_POINT)
     {
@@ -135,7 +135,7 @@ void Robot::DriveToPoint(void)
     }
 }
 
-void Robot::HandleDestination(void)
+void Nav::HandleDestination(void)
 {
     // robotState = ROBOT_IDLE;
     // chassis.Stop();
