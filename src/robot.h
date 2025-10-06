@@ -12,9 +12,9 @@ class Robot
 protected:
     // For managing key presses
     String keyString;
-    
+
     // Subsytems
-    // ChassisSubsystem chassis;
+    ChassisSubsystem chassis;
     ExtenderSubsystem extender;
     GripperSubsystem gripper;
     LifterSubsystem lifter;

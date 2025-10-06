@@ -1,54 +1,164 @@
-/**
- * robot-nav.cpp is where you should put navigation routines.
- */
-#include "Nav.h"
+#include "ChassisSubsystem.h"
 
-void Robot::InitializeRobot(void)
-{
+// --------- Susytems Functions ---------
+void ChassisSubsystem::Init() {
+    currentState = State::Idle;
+
     chassis.InititalizeChassis();
-    Serial.println("Robot initialized.");
 
     pinMode(13, OUTPUT);
     digitalWrite(13, LOW);
+
+#ifdef __SUBSYSTEM_DEBUG
+    Serial.println("ChassisSubsystem -> Initilized");
+#endif
 }
 
-void Robot::EnterIdleState(void)
-{
-    chassis.Stop();
-
-    Serial.println("-> IDLE");
-    robotState = ROBOT_IDLE;
-}
-
-Twist velocity;
+void ChassisSubsystem::Update() {
+    Twist velocity;
     if(chassis.ChassisLoop(velocity))
     {
         // We do FK regardless of state
         UpdatePose(velocity);
-        
-        if (buttonA.getSingleDebouncedPress()) {
-            delay(250); //wait so you can move your finger
-            SetDestination(points[point_index]);
-        }
 
-        /**
-         * Here, we break with tradition and only call these functions if we're in the 
-         * DRIVE_TO_POINT state. CheckReachedDestination() is expensive, so we don't want
-         * to do all the maths when we don't need to.
-         * 
-         * While we're at it, we'll toss DriveToPoint() in, as well.
-         */ 
-        if(robotState == ROBOT_DRIVE_TO_POINT)
-        {
+        switch (currentState) {
+        case State::Idle:
+            Idle();
+            break;
+
+        case State::DRIVE_TO_POINT:
             DriveToPoint();
-            if(CheckReachedDestination()) {
-                HandleDestination();
-            }
-        }
+            break;
+    }
     }
 
+    // Call just in case
+    if (currentState == State::Idle)
+        Idle();
+}
+
+bool ChassisSubsystem::IsDone() const {
+    return currentState == State::Idle;
+}
+
+// --------- States ---------
+void ChassisSubsystem::Idle() {
+    //TODO: stop motors
+    chassis.Stop();
+}
+
+void ChassisSubsystem::DriveToPoint() {
+    // Simple P controller
+    // ------------ Constants ------------
     
-void Nav::UpdatePose(const Twist &twist)
+    float kp_linear = 25.0; // 200 Proportional gain for linear velocity
+    float kp_angular = 300.0; // 400 Proportional gain for angular velocity
+
+    float max_linear_velocity = 200.0; // Maximum linear velocity
+
+    // ------------ Errors ------------
+    // Differences in position
+    float dx = destPose.x - currPose.x;
+    float dy = destPose.y - currPose.y;
+
+    // Difference in heading For alling to pose
+    float dangle = destPose.theta - currPose.theta;
+    dangle = NormalizeAngle(dangle);
+
+
+    // Euclidean distance (always positive)
+    float distance_to_target = sqrt(dx*dx + dy*dy);
+
+    // Angle to the target in the robot frame
+    float angle_to_target = atan2(dy, dx) - currPose.theta;
+    angle_to_target = NormalizeAngle(angle_to_target);
+
+    // Allow reverse driving if target is behind
+    if (fabs(angle_to_target) >  PI / 2) {
+        distance_to_target = -distance_to_target;
+        angle_to_target = NormalizeAngle(angle_to_target + PI);
+    }
+
+    // ------------ Control ------------
+    float v = kp_linear * distance_to_target;
+    v = clamp(v, -max_linear_velocity, max_linear_velocity);
+
+    float w = kp_angular * angle_to_target;
+    // Optional: align heading with pose when close to the goal
+    // if (fabs(distance_to_target) < 3.0) {
+    //     w = kp_angular * dangle; // align heading at the goal
+    // }
+
+    // ------------ Actuation ------------
+    // Backwards kinematics for differential drive
+    float right_Wheel_effort = v + w;
+    float left_Wheel_effort = v - w;
+    
+    #ifdef __NAV_DEBUG__
+            TeleplotPrint("x_to_dest", dx);
+            TeleplotPrint("y_to_dest", dy);
+            TeleplotPrint("theta_to_dest", dangle);
+    #endif
+    #ifdef __EXTRA_SHIT_DEBUG__
+            TeleplotPrint("dist", distance_to_target);
+            TeleplotPrint("angle", angle_to_target);
+            TeleplotPrint("v", v);
+            TeleplotPrint("w", w);
+    #endif
+    // Set the motor efforts
+    chassis.SetMotorEfforts(left_Wheel_effort, right_Wheel_effort);
+
+    if(CheckReachedDestination()) {
+        digitalWrite(13, LOW);
+
+        point_index ++;
+        if (point_index < points.size())
+        {
+            delay(60); // Probably shuold make not Blocking, but its 3 ticks
+            SetDestinationCommand();
+        }
+        else {
+            SetState(State::Idle);
+            point_index = 0;
+        }
+    }
+}
+
+void ChassisSubsystem::SetState(State newState) {
+    if (newState != currentState) {
+        previousState = currentState;
+        currentState = newState;
+
+    #ifdef __SUBSYSTEM_DEBUG
+        switch (newState) {
+            case State::Idle:       Serial.println("ChassisSubsystem -> Entering IDLE"); break;
+            case State::DRIVE_TO_POINT:  Serial.println("ChassisSubsystem -> DRIVE_TO_POINT"); break;
+        }
+    #endif
+    }
+}
+
+// --------- Commands ---------
+void ChassisSubsystem::SetDestinationCommand() {
+    if (currentState == State::Idle) {
+        Pose dest = points[point_index];
+
+        digitalWrite(13, HIGH);
+        #ifdef __SUBSYSTEM_DEBUG
+            Serial.print("Setting dest to: ");
+            Serial.print(dest.x);
+            Serial.print(", ");
+            Serial.print(dest.y);
+            Serial.print('\n');
+        #endif
+
+        destPose = dest;
+        SetState(State::DRIVE_TO_POINT);
+    }
+}
+
+// --------- Helper Functions ---------
+void ChassisSubsystem::UpdatePose(const Twist &twist)
 {
     // Assume twist is in cm/s and rad/s, and we call this at 50Hz
     float deltaTime = 0.020; // Default to control loop period
@@ -72,29 +182,13 @@ void Nav::UpdatePose(const Twist &twist)
 #endif
 }
 
-/**
- * Sets a destination in the lab frame.
- */
-void Nav::SetDestination(const Pose &dest)
-{
-    digitalWrite(13, HIGH);
-    
-    Serial.print("Setting dest to: ");
-    Serial.print(dest.x);
-    Serial.print(", ");
-    Serial.print(dest.y);
-    Serial.print('\n');
-
-    destPose = dest;
-    robotState = ROBOT_DRIVE_TO_POINT;
-}
 
 /**
  * Check if we've reached the destination.
  * 
  * Returns true if we're within some small threshold of the destination.
  */
-bool Nav::CheckReachedDestination(void)
+bool ChassisSubsystem::CheckReachedDestination(void)
 {
     bool retVal = true;
     const float errorDistance = 3.0; //cm
@@ -105,95 +199,4 @@ bool Nav::CheckReachedDestination(void)
     // retVal = retVal && fabs(destPose.theta - currPose.theta) < angleError;
 
     return retVal;
-}
-
-/**
- * Drive to the point specified in destPose.
- * 
- * This should be called repeatedly in RobotLoop() when in the DRIVE_TO_POINT state.
- * 
- * This should set the motor efforts to drive to the point. It should not block.
- */
-void Nav::DriveToPoint(void)
-{
-    if(robotState == ROBOT_DRIVE_TO_POINT)
-    {
-        // Simple P controller
-        // ------------ Constants ------------
-        
-        float kp_linear = 25.0; // 200 Proportional gain for linear velocity
-        float kp_angular = 300.0; // 400 Proportional gain for angular velocity
-
-        float max_linear_velocity = 200.0; // Maximum linear velocity
-
-        // ------------ Errors ------------
-        // Differences in position
-        float dx = destPose.x - currPose.x;
-        float dy = destPose.y - currPose.y;
-
-        // Difference in heading For alling to pose
-        float dangle = destPose.theta - currPose.theta;
-        dangle = NormalizeAngle(dangle);
-
-
-        // Euclidean distance (always positive)
-        float distance_to_target = sqrt(dx*dx + dy*dy);
-
-        // Angle to the target in the robot frame
-        float angle_to_target = atan2(dy, dx) - currPose.theta;
-        angle_to_target = NormalizeAngle(angle_to_target);
-
-        // Allow reverse driving if target is behind
-        if (fabs(angle_to_target) >  PI / 2) {
-            distance_to_target = -distance_to_target;
-            angle_to_target = NormalizeAngle(angle_to_target + PI);
-        }
-
-        // ------------ Control ------------
-        float v = kp_linear * distance_to_target;
-        v = clamp(v, -max_linear_velocity, max_linear_velocity);
-
-        float w = kp_angular * angle_to_target;
-        // Optional: align heading with pose when close to the goal
-        // if (fabs(distance_to_target) < 3.0) {
-        //     w = kp_angular * dangle; // align heading at the goal
-        // }
-
-        // ------------ Actuation ------------
-        // Backwards kinematics for differential drive
-        float right_Wheel_effort = v + w;
-        float left_Wheel_effort = v - w;
-        
-#ifdef __NAV_DEBUG__
-        TeleplotPrint("x_to_dest", dx);
-        TeleplotPrint("y_to_dest", dy);
-        TeleplotPrint("theta_to_dest", dangle);
-#endif
-#ifdef __EXTRA_SHIT_DEBUG__
-        TeleplotPrint("dist", distance_to_target);
-        TeleplotPrint("angle", angle_to_target);
-        TeleplotPrint("v", v);
-        TeleplotPrint("w", w);
-#endif
-        // Set the motor efforts
-        chassis.SetMotorEfforts(left_Wheel_effort, right_Wheel_effort);
-    }
-}
-
-void Nav::HandleDestination(void)
-{
-    // robotState = ROBOT_IDLE;
-    // chassis.Stop();
-    digitalWrite(13, LOW);
-
-    point_index ++;
-    if (point_index < points.size())
-    {
-        delay(60); // Probably shuold make not st
-        SetDestination(points[point_index]);
-    }
-    else {
-        EnterIdleState();
-        point_index = 0;
-    }
 }

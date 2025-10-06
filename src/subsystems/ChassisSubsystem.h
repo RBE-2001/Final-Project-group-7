@@ -1,16 +1,33 @@
+#pragma once
+
 #include "chassis.h"
 
 #include <vector>
+#include "Subsystem.h"
 
-class Nav
-{
+class ChassisSubsystem : public Subsystem {
 public:
-    enum ROBOT_STATE 
-    {
-        ROBOT_IDLE,
-        ROBOT_DRIVE_TO_POINT, 
+    void Init() override;
+    void Update() override;
+    bool IsDone() const override;
+
+    void SetDestinationCommand();
+private:
+    enum class State {
+        Idle,
+        DRIVE_TO_POINT,
     };
-    ROBOT_STATE robotState = ROBOT_IDLE;
+
+    State currentState = State::Idle;
+    State previousState = State::Idle;
+    
+    void SetState(State newState);
+    void Idle();
+    void DriveToPoint();
+
+    // Helper functions
+    void UpdatePose(const Twist& u);
+    bool CheckReachedDestination(void);
 
 protected:
     /* Define the chassis*/
@@ -22,7 +39,7 @@ protected:
     Pose currPose;
     Pose destPose;
 
-    // For going to array of points
+    // For driving an array of points
     unsigned int point_index = 0;
 
     // TODO: update to go around  optical
@@ -33,13 +50,4 @@ protected:
         {-30, 30, 0},
         {0, 0, 0}
     };
-
-    
-    void SetDestination(const Pose& destination);
-
-    // Navigation methods.
-    void UpdatePose(const Twist& u);
-    void DriveToPoint(void);
-    bool CheckReachedDestination(void);
-    void HandleDestination(void);
 };

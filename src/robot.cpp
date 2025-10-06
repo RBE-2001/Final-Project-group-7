@@ -2,6 +2,7 @@
 
 void Robot::InitializeRobot(void)
 {
+    chassis.Init();
     extender.Init();
     gripper.Init();
     lifter.Init();
@@ -21,6 +22,7 @@ Romi32U4ButtonB buttonB;
 */
 void Robot::RobotLoop(void) 
 {
+    chassis.Update();
     extender.Update();
     gripper.Update();
     lifter.Update();
