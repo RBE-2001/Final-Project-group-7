@@ -94,13 +94,15 @@ bool DualBlueMotor::moveToPosition(int motorNum, long target) {
 
     // Only move if the other motor is idle
     if (otherMotor.state == IDLE) {
-        PIDMotor(m, target, PID(1, 0, 0)) //TODO: TUNE PID and for both motors
+        PID pid = PID();
+        pid.Kp = 10;
+        PIDMotor(m, target, pid); //TODO: TUNE PID and for both motors
     }
 
     return false; // still moving or waiting for other motor
 }
 
-bool DualBlueMotor::PIDMotor(Motor &m, long target PID pid) {
+bool DualBlueMotor::PIDMotor(Motor &m, long target, PID pid) {
     noInterrupts();
     long current = m.count;
     interrupts();
@@ -111,7 +113,6 @@ bool DualBlueMotor::PIDMotor(Motor &m, long target PID pid) {
     // Motor reached target
     if (abs(error) < pid.tolorance) {
         setMotorDirection(m, Direction::HOLD); // stop motor
-        setEffort(m, 0);
         m.state = IDLE;
 
         // Reset PID state
@@ -137,7 +138,7 @@ bool DualBlueMotor::PIDMotor(Motor &m, long target PID pid) {
 
     // Constrain PWM to effert bounds
     int pwmEffort = constrain((int)output, 0, 400);
-    setEffort(m, pwmEffort);
+    setEffort(pwmEffort);
 
     m.state = MOVING;
     return false; // target not yet reached
@@ -145,28 +146,34 @@ bool DualBlueMotor::PIDMotor(Motor &m, long target PID pid) {
 
 // Encoder ISRs
 void DualBlueMotor::encoder1ISR() {
-    updateEncoder(motor1);
+    bool a = digitalRead(motor1.encA);
+    bool b = digitalRead(motor1.encB);
+    short s = getState(a, b);
+
+    short diff = (s - motor1.previousState + 4) % 4;
+    if (diff == 1) {
+        motor1.count--;
+    } else if (diff == 3) {
+        motor1.count++;
+    }
+    motor1.previousState = s;
 }
 
 void DualBlueMotor::encoder2ISR() {
-    updateEncoder(motor2);
+    bool a = digitalRead(motor2.encA);
+    bool b = digitalRead(motor2.encB);
+    short s = getState(a, b);
+
+    short diff = (s - motor2.previousState + 4) % 4;
+    if (diff == 1) {
+        motor2.count--;
+    } else if (diff == 3) {
+        motor2.count++;
+    }
+    motor2.previousState = s;
 }
 
 // --- Private helpers ---
-void DualBlueMotor::updateEncoder(Motor &m) {
-    bool a = digitalRead(m.encA);
-    bool b = digitalRead(m.encB);
-    short s = getState(a, b);
-
-    short diff = (s - m.previousState + 4) % 4;
-    if (diff == 1) {
-        m.count--;
-    } else if (diff == 3) {
-        m.count++;
-    }
-    m.previousState = s;
-}
-
 short DualBlueMotor::getState(bool encA, bool encB) {
     if (!encA && !encB) return 3;
     else if (!encA && encB) return 2;

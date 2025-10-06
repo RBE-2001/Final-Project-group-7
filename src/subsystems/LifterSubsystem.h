@@ -4,10 +4,6 @@
 
 class LifterSubsystem : public Subsystem {
 public:
-    DualBlueMotor dualMotor
-    LifterSubsystem(DualBlueMotor dm) {
-        dualMotor = dm
-    }
 
     void Init() override;
     void Update() override;

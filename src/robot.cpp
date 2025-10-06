@@ -29,6 +29,6 @@ void Robot::RobotLoop(void)
 
     if (buttonA.getSingleDebouncedPress()) {
         delay(250); //wait so you can move your finger
-        extender.ExtendCommand()
+        extender.ExtendCommand();
     }
 }

@@ -19,12 +19,14 @@ protected:
     // DualBlueMotor(int pwmPin,
     //                     int m1_ain1, int m1_ain2, int m1_encA, int m1_encB,
     //                     int m2_ain1, int m2_ain2, int m2_encA, int m2_encB);
-    DualBlueMotor dualMotor = DualBlueMotor(11, 1, 2, 3, 4, 5, 6, 7 ,8);
+    // Motor 1 pins ain1=4 ain2=13 encA=0, encB=1
+    // Motor 2 pins bin1=20 bin2=21 encA=2, encB=3
+    DualBlueMotor dualMotor = DualBlueMotor(11, 4, 13, 0, 1, 20, 21, 2 ,3);
     // Subsytems
     ChassisSubsystem chassis;
-    ExtenderSubsystem extender = extender(dualMotor);
+    ExtenderSubsystem extender;
     GripperSubsystem gripper;
-    LifterSubsystem lifter = lifter(dualMotor);
+    LifterSubsystem lifter;
 
 public:
     Robot(void) {keyString.reserve(10);}

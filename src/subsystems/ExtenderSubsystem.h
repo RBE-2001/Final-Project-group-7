@@ -4,10 +4,6 @@
 
 class ExtenderSubsystem : public Subsystem {
 public:
-    DualBlueMotor dualMotor
-    ExtenderSubsystem(DualBlueMotor dm) {
-        dualMotor = dm
-    }
     
     void Init() override;
     void Update() override;
@@ -32,7 +28,4 @@ private:
     void Idle();
     void Extend();
     void Retract();
-
-    DualBlueMotor dualMotor = DualBlueMotor();
-    
 };

@@ -15,6 +15,14 @@ public:
         Direction dir;           // Current direction
     };
 
+    struct PID {
+        float Kp = 0;
+        float Ki = 0;
+        float Kd = 0;
+        float tolorance = 10;
+        long integral = 0;
+        long lastError = 0;
+    };
     // Constructor: pwm pin, motor pins + encoder pins
     DualBlueMotor(int pwmPin,
                         int m1_ain1, int m1_ain2, int m1_encA, int m1_encB,
@@ -39,17 +47,7 @@ private:
 
     // Internal helpers
     void setMotorDirection(Motor &m, Direction dir);
-    void updateEncoder(Motor &m);
     short getState(bool encA, bool encB);
 
-    bool PIDMotor(Motor &m, long target)
-};
-
-struct PID {
-    float Kp;
-    float Ki;
-    float Kd;
-    float tolorance = 10;
-    long integral = 0;
-    long lastError = 0;
+    bool PIDMotor(Motor &m, long target, PID pid);
 };
