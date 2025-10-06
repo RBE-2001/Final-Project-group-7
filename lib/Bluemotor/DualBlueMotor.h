@@ -1,0 +1,45 @@
+#pragma once
+#include <Arduino.h>
+
+class DualBlueMotor {
+public:
+    enum Direction { HOLD, COAST, FORWARD, BACKWARD };
+    enum State { IDLE, MOVING };
+
+    struct Motor {
+        int ain1, ain2;          // H-bridge direction pins
+        int encA, encB;          // Encoder pins
+        volatile long count;     // Encoder count
+        short previousState;     // Previous encoder state
+        long targetPos;          // Target position
+        State state;             // IDLE or MOVING
+        Direction dir;           // Current direction
+    };
+
+    // Constructor: pwm pin, motor pins + encoder pins
+    DualBlueMotor(int pwmPin,
+                        int m1_ain1, int m1_ain2, int m1_encA, int m1_encB,
+                        int m2_ain1, int m2_ain2, int m2_encA, int m2_encB);
+
+    // Set the shared PWM duty cycle (0-400)
+    void setEffort(int effort);
+
+    // Set the direction of a motor individually
+    void setMotorMode(int motorNum, Direction dir);
+
+    // Non-blocking move to target
+    bool moveToPosition(int motorNum, long target);
+
+    // Encoder ISRs (attach in setup)
+    void encoder1ISR();
+    void encoder2ISR();
+
+private:
+    int pwmPin;
+    Motor motor1, motor2;
+
+    // Internal helpers
+    void setMotorDirection(Motor &m, Direction dir);
+    void updateEncoder(Motor &m);
+    short getState(bool encA, bool encB);
+};
