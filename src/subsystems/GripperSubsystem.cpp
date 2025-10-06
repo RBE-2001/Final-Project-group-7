@@ -32,16 +32,10 @@ bool GripperSubsystem::IsDone() const {
 
 // --------- States ---------
 void GripperSubsystem::Idle() {
-#ifdef __SUBSYSTEM_DEBUG
-    Serial.println("GripperSubsystem -> IDLE");
-#endif
     //TODO: stop motors
 }
 
 void GripperSubsystem::Open() {
-#ifdef __SUBSYSTEM_DEBUG
-    Serial.println("GripperSubsystem -> Open");
-#endif
     // TODO: replace with open gripper code
 
     if (true) { //TODO: replace true with logic for when gripper is open
@@ -51,9 +45,6 @@ void GripperSubsystem::Open() {
 }
 
 void GripperSubsystem::Close() {
-#ifdef __SUBSYSTEM_DEBUG
-    Serial.println("GripperSubsystem -> Closed");
-#endif
     // TODO: replace with close gripper code
 
     if (true) { //TODO: replace true with logic for when gripper is closed
@@ -63,7 +54,18 @@ void GripperSubsystem::Close() {
 }
 
 void GripperSubsystem::SetState(State newState) {
-    currentState = newState;
+    if (newState != currentState) {
+        previousState = currentState;
+        currentState = newState;
+
+    #ifdef __SUBSYSTEM_DEBUG
+        switch (newState) {
+            case State::Idle:       Serial.println("GripperSubsystem -> Entering IDLE"); break;
+            case State::Opening:  Serial.println("GripperSubsystem -> Entering Opening"); break;
+            case State::Closing: Serial.println("GripperSubsystem -> Entering Closing"); break;
+        }
+    #endif
+    }
 }
 
 // --------- Commands ---------

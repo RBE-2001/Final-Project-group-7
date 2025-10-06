@@ -18,6 +18,8 @@ private:
     };
 
     State currentState = State::Idle;
+    State previousState = State::Idle;
+    
     bool isExtended = false;
 
     void SetState(State newState);

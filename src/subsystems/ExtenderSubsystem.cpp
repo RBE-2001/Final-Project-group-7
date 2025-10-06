@@ -32,16 +32,10 @@ bool ExtenderSubsystem::IsDone() const {
 
 // --------- States ---------
 void ExtenderSubsystem::Idle() {
-#ifdef __SUBSYSTEM_DEBUG
-    Serial.println("ExtenderSubsystem -> IDLE");
-#endif
     //TODO: stop motors
 }
 
 void ExtenderSubsystem::Extend() {
-#ifdef __SUBSYSTEM_DEBUG
-    Serial.println("ExtenderSubsystem -> Extending");
-#endif
     // TODO: replace with Extend extending code
 
     if (true) { //TODO: replace true with logic for when Extender is extended
@@ -51,9 +45,6 @@ void ExtenderSubsystem::Extend() {
 }
 
 void ExtenderSubsystem::Retract() {
-#ifdef __SUBSYSTEM_DEBUG
-    Serial.println("ExtenderSubsystem -> Retracting");
-#endif
     // TODO: replace with Extend Retract code
 
     if (true) { //TODO: replace true with logic for when Extender is Retracted
@@ -63,7 +54,18 @@ void ExtenderSubsystem::Retract() {
 }
 
 void ExtenderSubsystem::SetState(State newState) {
-    currentState = newState;
+    if (newState != currentState) {
+        previousState = currentState;
+        currentState = newState;
+
+    #ifdef __SUBSYSTEM_DEBUG
+        switch (newState) {
+            case State::Idle:       Serial.println("ExtenderSubsystem -> Entering IDLE"); break;
+            case State::Extending:  Serial.println("ExtenderSubsystem -> Entering EXTENDING"); break;
+            case State::Retracting: Serial.println("ExtenderSubsystem -> Entering RETRACTING"); break;
+        }
+    #endif
+    }
 }
 
 // --------- Commands ---------

@@ -18,6 +18,8 @@ private:
     };
 
     State currentState = State::Idle;
+    State previousState = State::Idle;
+    
     bool isGripperOpen = false;
 
     void SetState(State newState);
