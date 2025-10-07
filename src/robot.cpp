@@ -82,7 +82,6 @@ void Robot::RobotLoop(void)
     done = done && lifter.IsDone();
     if (done){
       steps ++;
-      done = false;
     }
 
 }

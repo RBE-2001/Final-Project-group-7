@@ -40,7 +40,7 @@ void ExtenderSubsystem::Extend() {
     // TODO: replace with Extend extending code
     motor.setEffort(-400);
     
-    if (motor.getPosition() <= -200.0) { //TODO: replace true with logic for when Extender is extended
+    if (motor.getPosition() <= -150.0) { //TODO: replace true with logic for when Extender is extended
         motor.setEffort(0);
         isExtended = true;
         SetState(State::Idle);  // go back to idle when done
@@ -50,7 +50,7 @@ void ExtenderSubsystem::Extend() {
 void ExtenderSubsystem::Retract() {
     // TODO: replace with Extend Retract code
     motor.setEffort(400);
-    if (motor.getPosition() > 5) { //TODO: replace true with logic for when Extender is Retracted
+    if (motor.getPosition() > 25) { //TODO: replace true with logic for when Extender is Retracted
         isExtended = false;
         SetState(State::Idle);  // go back to idle when done
     }
