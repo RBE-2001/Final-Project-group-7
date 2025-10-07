@@ -27,6 +27,22 @@ long newPosition2 = 0;
 int steps = 0;
 int lastStep = -1; 
 
+/*
+
+TODO List
+1. Remove as muuch friction in system as posile
+- extender, large gear, shorter olts, resess bolts
+2. test extender, get it goung back and forth
+3. test up and down, get it gong to min and max
+- check motors are spining right derection
+- have it drive up and down, no pid
+- drive motors two set points, not mounted
+4. gripper
+- make this shit work
+5. run all systems in order
+6. tune evrything, proaly want second between swiching
+ */
+
 /**
  * The main loop for your robot. Process both synchronous events (motor control),
  * and asynchronous events (distance readings, etc.).
@@ -58,30 +74,31 @@ void Robot::RobotLoop(void)
     Serial.print(newPosition2);
     Serial.println("");
 
-    // entering states
-    if (steps != lastStep) {
-      lastStep = steps;
-      switch (steps)
-      {
-        case 1:
-          extender.ExtendCommand(); break;
-        case 2:
-          gripper.CloseCommand(); break;
-        case 3:
-          extender.RetractCommand(); break;
-        case 4:
-          lifter.L25Command(); break;
-        default:
-          steps = 0; break;
-      }
-    }
+    // // entering states
+    // if (steps != lastStep) {
+    //   lastStep = steps;
+    //   switch (steps)
+    //   {
+    //     case 1:
+    //       extender.ExtendCommand(); break;
+    //     case 2:
+    //       gripper.CloseCommand(); break;
+    //     case 3:
+    //       extender.RetractCommand(); break;
+    //     case 4:
+    //       lifter.L25Command(); break;
+    //     default:
+    //       steps = 0; break;
+    //   }
+    // }
 
-    // all done ready for next state
-    bool done = extender.IsDone();
-    done = done && gripper.IsDone();
-    done = done && lifter.IsDone();
-    if (done){
-      steps ++;
-    }
+    // // all done ready for next state
+    // bool done = extender.IsDone();
+    // done = done && gripper.IsDone();
+    // done = done && lifter.IsDone();
+    // if (done){
+    //   steps ++;
+    //   delay(1000);
+    // }
 
 }
