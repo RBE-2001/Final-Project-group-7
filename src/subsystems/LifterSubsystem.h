@@ -1,6 +1,8 @@
 #pragma once
 #include "Subsystem.h"
 
+#include "BlueMotorLifter.h"
+
 class LifterSubsystem : public Subsystem {
 public:
 
@@ -26,6 +28,8 @@ private:
 
     State currentState = State::Idle;
     State previousState = State::Idle;
+
+    BlueMotorLifter motor;
 
     void SetState(State newState);
     void Idle();

@@ -1,6 +1,8 @@
 #pragma once
 #include "Subsystem.h"
 
+#include "BlueMotorExtender.h"
+
 class ExtenderSubsystem : public Subsystem {
 public:
     
@@ -17,6 +19,8 @@ private:
         Extending,
         Retracting
     };
+
+    BlueMotorExtender motor;
 
     State currentState = State::Idle;
     State previousState = State::Idle;

@@ -18,14 +18,9 @@ void Robot::InitializeRobot(void)
 
 Romi32U4ButtonA buttonA;
 Romi32U4ButtonB buttonB;
-long timeToPrint = 0;
-long now = 0;
-long newPosition = 0;
-long oldPosition = 0;
-long sampleTime = 100;
-int speedInRPM = 0;
-int CPR = 270;
-int motorEffort = 400;
+
+long newPosition1 = 0;
+long newPosition2 = 0;
 
 /**
  * The main loop for your robot. Process both synchronous events (motor control),
@@ -38,24 +33,24 @@ void Robot::RobotLoop(void)
     gripper.Update();
     lifter.Update();
 
-    // if (buttonA.getSingleDebouncedPress()) {
-    //     delay(250); //wait so you can move your finger
-    //     extender.ExtendCommand();
-    // }
-
-    motor1.setEffort(350);
-    motor2.setEffort(350);
-    if ((now = millis()) > timeToPrint)
-    {
-      timeToPrint = now + sampleTime;
-      newPosition = motor1.getPosition();
-      speedInRPM = (newPosition - oldPosition)/1080.0 * (60000.0 / sampleTime);
-      Serial.print(now);
-      Serial.print("          ");
-      Serial.print(newPosition);
-      Serial.print("          ");
-      Serial.println(speedInRPM);
-      oldPosition = newPosition;
-      
+    if (buttonA.getSingleDebouncedPress()) {
+        //delay(250); //wait so you can move your finger
+        extender.ExtendCommand();
+        // lifter.L3Command();
     }
+    if (buttonB.getSingleDebouncedPress()) {
+        //delay(250); //wait so you can move your finger
+        extender.RetractCommand();
+        // lifter.L1Command();
+    }
+    // motor1.setEffort(350);
+    // motor2.setEffort(350);
+    
+    newPosition1 = motor1.getPosition();
+    newPosition2 = motor2.getPosition();
+
+    Serial.print(newPosition1);
+    Serial.print("          ");
+    Serial.print(newPosition2);
+    Serial.println("");
 }

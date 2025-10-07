@@ -16,23 +16,23 @@ void LifterSubsystem::Update() {
             break;
 
         case State::L1:
-            GoToL(1);
+            GoToL(0);
             break;
 
         case State::L15:
-            GoToL(1.5);
+            GoToL(500;
             break;
 
         case State::L2:
-            GoToL(2);
+            GoToL(1500);
             break;
 
         case State::L25:
-            GoToL(2.5);
+            GoToL(2000);
             break;
 
         case State::L3:
-            GoToL(3);
+            GoToL(2200);
             break;
     }
 }
@@ -40,17 +40,21 @@ void LifterSubsystem::Update() {
 bool LifterSubsystem::IsDone() const {
     return currentState == State::Idle;
 }
+// 2200 max hight
 
 // --------- States ---------
 void LifterSubsystem::Idle() {
     //TODO: stop motors
+    motor.setEffort(0);
 }
 
 void LifterSubsystem::GoToL(float rot) {
     // TODO: replace with set Lifter to L code
-
-    if (true) { //TODO: replace true with logic for when Lifter is at Leval
+    float error = rot - motor.getPosition();
+    motor.setEffort(error);
+    if (abs(error) < 20) { //TODO: replace true with logic for when Lifter is at Leval
         SetState(State::Idle);  // go back to idle when done
+        motor.setEffort(0);
     }
 }
 
