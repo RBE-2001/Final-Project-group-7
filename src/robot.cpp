@@ -19,8 +19,13 @@ void Robot::InitializeRobot(void)
 Romi32U4ButtonA buttonA;
 Romi32U4ButtonB buttonB;
 
+// for debugging
 long newPosition1 = 0;
 long newPosition2 = 0;
+
+
+int steps = 0;
+int lastStep = -1; 
 
 /**
  * The main loop for your robot. Process both synchronous events (motor control),
@@ -45,7 +50,6 @@ void Robot::RobotLoop(void)
     }
     // motor1.setEffort(350);
     // motor2.setEffort(350);
-    
     newPosition1 = motor1.getPosition();
     newPosition2 = motor2.getPosition();
 
@@ -53,4 +57,32 @@ void Robot::RobotLoop(void)
     Serial.print("          ");
     Serial.print(newPosition2);
     Serial.println("");
+
+    // entering states
+    if (steps != lastStep) {
+      lastStep = steps;
+      switch (steps)
+      {
+        case 1:
+          extender.ExtendCommand(); break;
+        case 2:
+          gripper.CloseCommand(); break;
+        case 3:
+          extender.RetractCommand(); break;
+        case 4:
+          lifter.L25Command(); break;
+        default:
+          steps = 0; break;
+      }
+    }
+
+    // all done ready for next state
+    bool done = extender.IsDone();
+    done = done && gripper.IsDone();
+    done = done && lifter.IsDone();
+    if (done){
+      steps ++;
+      done = false;
+    }
+
 }
