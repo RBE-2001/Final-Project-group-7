@@ -138,8 +138,10 @@ void Robot::RobotLoop(void)
             lifter.L15Command(); break;
         case 16:
             gripper.OpenCommand(); break;
-        default:
-          steps = 0; break;
+        case 17:
+            chassis.SetDestinationCommand(); break;
+        // default:
+        //   steps = 0; break;
       }
     }
 
@@ -147,6 +149,7 @@ void Robot::RobotLoop(void)
     bool done = extender.IsDone();
     done = done && gripper.IsDone();
     done = done && lifter.IsDone();
+    done = done && chassis.IsDone();
     done = done && start;
     if (done){
       steps ++;

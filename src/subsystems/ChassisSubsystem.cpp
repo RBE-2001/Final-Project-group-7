@@ -54,7 +54,7 @@ void ChassisSubsystem::DriveToPoint() {
     float kp_linear = 25.0; // 200 Proportional gain for linear velocity
     float kp_angular = 300.0; // 400 Proportional gain for angular velocity
 
-    float max_linear_velocity = 200.0; // Maximum linear velocity
+    float max_linear_velocity = 100.0; // Maximum linear velocity
 
     // ------------ Errors ------------
     // Differences in position
@@ -109,13 +109,15 @@ void ChassisSubsystem::DriveToPoint() {
     chassis.SetMotorEfforts(left_Wheel_effort, right_Wheel_effort);
 
     if(CheckReachedDestination()) {
-        digitalWrite(13, LOW);
+        // digitalWrite(13, LOW);
 
         point_index ++;
         if (point_index < points.size())
         {
             delay(60); // Probably shuold make not Blocking, but its 3 ticks
             SetDestinationCommand();
+            Serial.print("Going to Point");
+            Serial.println(point_index);
         }
         else {
             SetState(State::Idle);
@@ -140,10 +142,10 @@ void ChassisSubsystem::SetState(State newState) {
 
 // --------- Commands ---------
 void ChassisSubsystem::SetDestinationCommand() {
-    if (currentState == State::Idle) {
+    // if (currentState == State::Idle) {
         Pose dest = points[point_index];
 
-        digitalWrite(13, HIGH);
+        // digitalWrite(13, HIGH);
         #ifdef __SUBSYSTEM_DEBUG
             Serial.print("Setting dest to: ");
             Serial.print(dest.x);
@@ -154,7 +156,7 @@ void ChassisSubsystem::SetDestinationCommand() {
 
         destPose = dest;
         SetState(State::DRIVE_TO_POINT);
-    }
+    // }
 }
 
 // --------- Helper Functions ---------

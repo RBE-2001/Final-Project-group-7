@@ -44,10 +44,8 @@ protected:
 
     // TODO: update to go around  optical
     std::vector<Pose> points = {
-        {30, 30, 0},
-        {60, 0, 0},
-        {30, -30, 0},
-        {-30, 30, 0},
-        {0, 0, 0}
+        {00, 30, 0},
+        {40, 30, 0},
+        {40, 10, 0},
     };
 };
