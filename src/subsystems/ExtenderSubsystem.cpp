@@ -44,7 +44,7 @@ void ExtenderSubsystem::ExtendTop() {
     // TODO: replace with Extend extending code
     motor.setEffort(-400);
     
-    if (motor.getPosition() <= -150.0) { //TODO: replace true with logic for when Extender is extended
+    if (motor.getPosition() <= -170.0) { //TODO: replace true with logic for when Extender is extended
         motor.setEffort(0);
         isExtended = true;
         SetState(State::Idle);  // go back to idle when done
