@@ -10,13 +10,15 @@ public:
     void Update() override;
     bool IsDone() const override;
 
-    void ExtendCommand();   // trigger opening
+    void ExtendTopCommand();   // trigger opening
+    void ExtendBottomCommand();   // trigger opening
     void RetractCommand();  // trigger closing
 
 private:
     enum class State {
         Idle,
-        Extending,
+        ExtendingTop,
+        ExtendingBottom,
         Retracting
     };
 
@@ -29,6 +31,7 @@ private:
 
     void SetState(State newState);
     void Idle();
-    void Extend();
+    void ExtendTop();
+    void ExtendBottom();
     void Retract();
 };

@@ -9,14 +9,12 @@ public:
     void Update() override;
     bool IsDone() const override;
 
-    void OpenCommand();   // trigger opening
-    void CloseCommand();  // trigger closing
+    void Toggle();   // trigger opening
 
 private:
     enum class State {
         Idle,
-        Opening,
-        Closing
+        Toggle,
     };
 
     State currentState = State::Idle;

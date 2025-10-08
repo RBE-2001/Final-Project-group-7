@@ -62,7 +62,7 @@ void Robot::RobotLoop(void)
         //delay(250); //wait so you can move your finger
         // extender.ExtendCommand();
         // // lifter.L3Command();
-        // gripper.CloseCommand();
+        // gripper.Toggle();
         start = true;
         // Serial.println("Button A");
         // steps += 1;
@@ -107,9 +107,9 @@ void Robot::RobotLoop(void)
       switch (steps)
       {
         case 1:
-            extender.ExtendCommand(); break;
+            extender.ExtendBottomCommand(); break;
         case 2:
-            gripper.CloseCommand(); break;
+            gripper.Toggle(); break;
         case 3:
             lifter.L15Command(); break;
         case 4:
@@ -117,11 +117,11 @@ void Robot::RobotLoop(void)
         case 5:
             lifter.L25Command(); break;
         case 6:
-            extender.ExtendCommand(); break;
+            extender.ExtendTopCommand(); break;
         case 7:
             lifter.L2Command(); break;
         case 8:
-            gripper.OpenCommand(); break;
+            gripper.Toggle(); break;
         case 9:
             lifter.L25Command(); break;
         case 10:
@@ -129,15 +129,15 @@ void Robot::RobotLoop(void)
         case 11:
             lifter.L3Command();  break;
         case 12:
-            extender.ExtendCommand(); break;
+            extender.ExtendTopCommand(); break;
         case 13:
-            gripper.CloseCommand(); break;
+            gripper.Toggle(); break;
         case 14:
             extender.RetractCommand(); break;
         case 15:
             lifter.L15Command(); break;
         case 16:
-            gripper.OpenCommand(); break;
+            gripper.Toggle(); break;
         case 17:
             chassis.SetDestinationCommand(); break;
         // default:

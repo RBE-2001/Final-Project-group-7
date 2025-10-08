@@ -52,7 +52,7 @@ void ChassisSubsystem::DriveToPoint() {
     // ------------ Constants ------------
     
     float kp_linear = 25.0; // 200 Proportional gain for linear velocity
-    float kp_angular = 300.0; // 400 Proportional gain for angular velocity
+    float kp_angular = 200.0; // 400 Proportional gain for angular velocity
 
     float max_linear_velocity = 100.0; // Maximum linear velocity
 

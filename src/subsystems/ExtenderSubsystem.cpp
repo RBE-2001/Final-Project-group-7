@@ -16,8 +16,12 @@ void ExtenderSubsystem::Update() {
             Idle();
             break;
 
-        case State::Extending:
-            Extend();
+        case State::ExtendingTop:
+            ExtendTop();
+            break;
+        
+        case State::ExtendingBottom:
+            ExtendBottom();
             break;
 
         case State::Retracting:
@@ -36,11 +40,21 @@ void ExtenderSubsystem::Idle() {
     motor.setEffort(0);
 }
 
-void ExtenderSubsystem::Extend() {
+void ExtenderSubsystem::ExtendTop() {
     // TODO: replace with Extend extending code
     motor.setEffort(-400);
     
     if (motor.getPosition() <= -150.0) { //TODO: replace true with logic for when Extender is extended
+        motor.setEffort(0);
+        isExtended = true;
+        SetState(State::Idle);  // go back to idle when done
+    }
+}
+void ExtenderSubsystem::ExtendBottom() {
+    // TODO: replace with Extend extending code
+    motor.setEffort(-400);
+    
+    if (motor.getPosition() <= -100.0) { //TODO: replace true with logic for when Extender is extended
         motor.setEffort(0);
         isExtended = true;
         SetState(State::Idle);  // go back to idle when done
@@ -64,7 +78,8 @@ void ExtenderSubsystem::SetState(State newState) {
     #ifdef __SUBSYSTEM_DEBUG
         switch (newState) {
             case State::Idle:       Serial.println("ExtenderSubsystem -> Entering IDLE"); break;
-            case State::Extending:  Serial.println("ExtenderSubsystem -> Entering EXTENDING"); break;
+            case State::ExtendingTop:  Serial.println("ExtenderSubsystem -> Entering EXTENDING"); break;
+            case State::ExtendingBottom:  Serial.println("ExtenderSubsystem -> Entering EXTENDING"); break;
             case State::Retracting: Serial.println("ExtenderSubsystem -> Entering RETRACTING"); break;
         }
     #endif
@@ -72,9 +87,15 @@ void ExtenderSubsystem::SetState(State newState) {
 }
 
 // --------- Commands ---------
-void ExtenderSubsystem::ExtendCommand() {
+void ExtenderSubsystem::ExtendTopCommand() {
     if (currentState == State::Idle && !isExtended) {
-        SetState(State::Extending);
+        SetState(State::ExtendingTop);
+    }
+}
+
+void ExtenderSubsystem::ExtendBottomCommand() {
+    if (currentState == State::Idle && !isExtended) {
+        SetState(State::ExtendingBottom);
     }
 }
 

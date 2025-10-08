@@ -17,13 +17,10 @@ void GripperSubsystem::Update() {
             Idle();
             break;
 
-        case State::Opening:
+        case State::Toggle:
             goTo(1000);
             break;
 
-        case State::Closing:
-            goTo(2000);
-            break;
     }
 
     servo.update();
@@ -42,10 +39,16 @@ int cnt = 0;
 
 void GripperSubsystem::goTo(uint16_t goal) {
     // TODO: replace with open gripper code
-    servo.setTargetPos(goal);
+    if (isGripperOpen) {
+        servo.setTargetPos(1000);
+    } else
+    {
+        servo.setTargetPos(2000);
+    }
     cnt += 1;
     Serial.print("going to goal: ");
     Serial.println(goal);
+
     if (cnt > 50) {
         isGripperOpen = !isGripperOpen;
         SetState(State::Idle);
@@ -61,8 +64,7 @@ void GripperSubsystem::SetState(State newState) {
     #ifdef __SUBSYSTEM_DEBUG
         switch (newState) {
             case State::Idle:       Serial.println("GripperSubsystem -> Entering IDLE"); break;
-            case State::Opening:  Serial.println("GripperSubsystem -> Entering Opening"); break;
-            case State::Closing: Serial.println("GripperSubsystem -> Entering Closing"); break;
+            case State::Toggle:  Serial.println("GripperSubsystem -> Entering Opening"); break;
         }
     #endif
     }
@@ -70,14 +72,8 @@ void GripperSubsystem::SetState(State newState) {
 
 // --------- Commands ---------
 
-void GripperSubsystem::OpenCommand() {
+void GripperSubsystem::Toggle() {
     if (currentState == State::Idle) {
-        SetState(State::Opening);
-    }
-}
-
-void GripperSubsystem::CloseCommand() {
-    if (currentState == State::Idle) {
-        SetState(State::Closing);
+        SetState(State::Toggle);
     }
 }
