@@ -20,19 +20,19 @@ void LifterSubsystem::Update() {
             break;
 
         case State::L15:
-            GoToL(500);
+            GoToL(300);
             break;
 
         case State::L2:
-            GoToL(1500);
+            GoToL(1540);
             break;
 
         case State::L25:
-            GoToL(2000);
+            GoToL(1625);
             break;
 
         case State::L3:
-            GoToL(2200);
+            GoToL(2075);
             break;
     }
 }

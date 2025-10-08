@@ -38,17 +38,22 @@ void GripperSubsystem::Idle() {
     //TODO: stop motors
 }
 
+int cnt = 0;
+
 void GripperSubsystem::goTo(uint16_t goal) {
     // TODO: replace with open gripper code
     servo.setTargetPos(goal);
-    
+    cnt += 1;
     Serial.print("going to goal: ");
     Serial.println(goal);
-    isGripperOpen = !isGripperOpen;
-    SetState(State::Idle);
+    if (cnt > 50) {
+        isGripperOpen = !isGripperOpen;
+        SetState(State::Idle);
+    }
 }
 
 void GripperSubsystem::SetState(State newState) {
+    cnt = 0;
     if (newState != currentState) {
         previousState = currentState;
         currentState = newState;
@@ -66,13 +71,13 @@ void GripperSubsystem::SetState(State newState) {
 // --------- Commands ---------
 
 void GripperSubsystem::OpenCommand() {
-    if (currentState == State::Idle && !isGripperOpen) {
+    if (currentState == State::Idle) {
         SetState(State::Opening);
     }
 }
 
 void GripperSubsystem::CloseCommand() {
-    if (currentState == State::Idle && isGripperOpen) {
+    if (currentState == State::Idle) {
         SetState(State::Closing);
     }
 }
