@@ -2,7 +2,7 @@
 
 void Robot::InitializeRobot(void)
 {
-    // chassis.Init();
+    chassis.Init();
     extender.Init();
     gripper.Init();
     lifter.Init();
@@ -49,50 +49,75 @@ TODO List
 */
 void Robot::RobotLoop(void) 
 {
-    // chassis.Update();
+    chassis.Update();
     extender.Update();
     gripper.Update();
     lifter.Update();
 
     if (buttonA.getSingleDebouncedPress()) {
         //delay(250); //wait so you can move your finger
-        extender.ExtendCommand();
+        // extender.ExtendCommand();
         // lifter.L3Command();
+        gripper.CloseCommand();
     }
     if (buttonB.getSingleDebouncedPress()) {
         //delay(250); //wait so you can move your finger
-        extender.RetractCommand();
+        // extender.RetractCommand();
+        gripper.OpenCommand();
         // lifter.L1Command();
+        // chassis.SetDestinationCommand();
     }
     // motor1.setEffort(350);
     // motor2.setEffort(350);
     newPosition1 = motor1.getPosition();
     newPosition2 = motor2.getPosition();
 
-    Serial.print(newPosition1);
-    Serial.print("          ");
-    Serial.print(newPosition2);
-    Serial.println("");
+    // Serial.print(newPosition1);
+    // Serial.print("          ");
+    // Serial.print(newPosition2);
+    // Serial.println("");
 
-    // // entering states
+    // entering states
     // if (steps != lastStep) {
     //   lastStep = steps;
     //   switch (steps)
     //   {
     //     case 1:
-    //       extender.ExtendCommand(); break;
+    //         extender.ExtendCommand(); break;
     //     case 2:
-    //       gripper.CloseCommand(); break;
+    //         gripper.CloseCommand(); break;
     //     case 3:
-    //       extender.RetractCommand(); break;
+    //         lifter.L15Command(); break;
     //     case 4:
-    //       lifter.L25Command(); break;
+    //         extender.RetractCommand(); break;
+    //     case 5:
+    //         lifter.L25Command(); break;
+    //     case 6:
+    //         extender.ExtendCommand(); break;
+    //     case 7:
+    //         lifter.L2Command(); break;
+    //     case 8:
+    //         gripper.OpenCommand(); break;
+    //     case 9:
+    //         lifter.L25Command(); break;
+    //     case 10:
+    //         extender.RetractCommand(); break;
+    //     case 11:
+    //         lifter.L3Command();  break;
+    //     case 12:
+    //         extender.ExtendCommand(); break;
+    //     case 13:
+    //         gripper.CloseCommand(); break;
+    //     case 14:
+    //         extender.RetractCommand(); break;
+    //     case 16:
+    //         lifter.L1Command(); break;
     //     default:
     //       steps = 0; break;
     //   }
     // }
 
-    // // all done ready for next state
+    // // // all done ready for next state
     // bool done = extender.IsDone();
     // done = done && gripper.IsDone();
     // done = done && lifter.IsDone();

@@ -41,19 +41,18 @@ class Servo32U4Base
 {
 protected:
     // TODO: FIX THESE NUMBERS
-    uint16_t usMin = 500;
+    uint16_t usMin = 0;
     uint16_t usMax = 2500;
 
     uint8_t feedbackPin = -1;
     bool isAttached = false;
 
-    uint16_t targetPos = 1500;
-    uint16_t currentPos = 1500;
-
-public:
+    uint16_t targetPos = 1000;
+    uint16_t currentPos = 1000;
     // Virtual functions defined for each specific class
     virtual void attach(void) = 0;
     virtual void detach(void) = 0;
+    public:
     void setTargetPos(uint16_t target) {targetPos = target;}
 
     /**

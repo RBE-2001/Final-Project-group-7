@@ -28,6 +28,5 @@ private:
 
     void SetState(State newState);
     void Idle();
-    void Open();
-    void Close();
+    void goTo(uint16_t pose);
 };

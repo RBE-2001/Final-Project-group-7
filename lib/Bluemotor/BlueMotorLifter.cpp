@@ -55,7 +55,11 @@ void BlueMotorLifter::isr()
     short s = getState(digitalRead(ENCA), digitalRead(ENCB));
 
     // --- Compute difference with previous state ---
-    short diff = (s-previousState+4)%4;
+    short diff = s - previousState;
+
+    // Handle wrap-around manually instead of using modulus
+    if (diff < 0)
+        diff += 4;
 
     // --- Handle valid movement only ---
     if (diff == 1)
@@ -63,8 +67,8 @@ void BlueMotorLifter::isr()
     else if (diff == 3)
         count++; // counterclockwise positive
     // diff == 0 → no movement, ignore
-    // diff == 2 → invalid transition (e.g., bounce or skipped step), ignore
-    
+    // diff == 2 → invalid transition, ignore
+
     previousState = s; // save state for next time
 }
 
@@ -103,6 +107,7 @@ void BlueMotorLifter::setEffort(int effort, bool clockwise)
         digitalWrite(AIN1, LOW);
         digitalWrite(AIN2, HIGH);
     }
+    // analogWrite(PWMOutPin, effort/400.0 * 255.0); // duty 200/255//OCR1C = constrain(effort, 0, 400);
     OCR1C = constrain(effort, 0, 400);
 }
 

@@ -56,17 +56,21 @@ void BlueMotorExtender::isr()
     short s = getState(digitalRead(ENCA), digitalRead(ENCB));
 
     // --- Compute difference with previous state ---
-    short diff = (s-previousStateE+4)%4;
+    short diff = s - previousStateE;
+
+    // Handle wrap-around manually instead of using modulus
+    if (diff < 0)
+        diff += 4;
 
     // --- Handle valid movement only ---
     if (diff == 1)
         countE--; // clockwise negative
     else if (diff == 3)
-        countE++; // countEerclockwise positive
+        countE++; // counterclockwise positive
     // diff == 0 → no movement, ignore
-    // diff == 2 → invalid transition (e.g., bounce or skipped step), ignore
-    
-    previousStateE = s; // save state for next timeE
+    // diff == 2 → invalid transition, ignore
+
+    previousStateE = s; // save state for next time
 }
 
 short BlueMotorExtender::getState(bool encA, bool encB)

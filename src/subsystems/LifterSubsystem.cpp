@@ -16,11 +16,11 @@ void LifterSubsystem::Update() {
             break;
 
         case State::L1:
-            GoToL(0);
+            GoToL(10);
             break;
 
         case State::L15:
-            GoToL(500;
+            GoToL(500);
             break;
 
         case State::L2:
@@ -51,7 +51,7 @@ void LifterSubsystem::Idle() {
 void LifterSubsystem::GoToL(float rot) {
     // TODO: replace with set Lifter to L code
     float error = rot - motor.getPosition();
-    motor.setEffort(error);
+    motor.setEffort(error * 10);
     if (abs(error) < 20) { //TODO: replace true with logic for when Lifter is at Leval
         SetState(State::Idle);  // go back to idle when done
         motor.setEffort(0);

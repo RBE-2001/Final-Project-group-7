@@ -4,7 +4,7 @@
 void GripperSubsystem::Init() {
     currentState = State::Idle;
     isGripperOpen = false;
-    servo.attach()
+    servo.attach();
 
 #ifdef __SUBSYSTEM_DEBUG
     Serial.println("GripperSubsystem -> Initilized");
@@ -18,13 +18,15 @@ void GripperSubsystem::Update() {
             break;
 
         case State::Opening:
-            Open();
+            goTo(1000);
             break;
 
         case State::Closing:
-            Close();
+            goTo(2000);
             break;
     }
+
+    servo.update();
 }
 
 bool GripperSubsystem::IsDone() const {
@@ -36,26 +38,14 @@ void GripperSubsystem::Idle() {
     //TODO: stop motors
 }
 
-void GripperSubsystem::Open() {
+void GripperSubsystem::goTo(uint16_t goal) {
     // TODO: replace with open gripper code
-    int goal = 1000;
     servo.setTargetPos(goal);
     
-    if (abs(servo.currentPos - goal) < 50) { //TODO: replace true with logic for when gripper is open
-        isGripperOpen = true;
-        SetState(State::Idle);  // go back to idle when done
-    }
-}
-
-void GripperSubsystem::Close() {
-    // TODO: replace with close gripper code
-    int goal = 2000;
-    servo.setTargetPos(goal);
-    
-    if (abs(servo.currentPos - goal) < 50) { //TODO: replace true with logic for when gripper is closed
-        isGripperOpen = false;
-        SetState(State::Idle);  // go back to idle when done
-    }
+    Serial.print("going to goal: ");
+    Serial.println(goal);
+    isGripperOpen = !isGripperOpen;
+    SetState(State::Idle);
 }
 
 void GripperSubsystem::SetState(State newState) {

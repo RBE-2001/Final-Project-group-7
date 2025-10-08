@@ -2,7 +2,7 @@
 
 #include "Romi32U4Buttons.h"
 
-// #include "subsystems/ChassisSubsystem.h"
+#include "subsystems/ChassisSubsystem.h"
 #include "subsystems/ExtenderSubsystem.h"
 #include "subsystems/GripperSubsystem.h"
 #include "subsystems/LifterSubsystem.h"
@@ -26,7 +26,7 @@ protected:
     BlueMotorLifter motor1;
     BlueMotorExtender motor2;
     // Subsytems
-    // ChassisSubsystem chassis;
+    ChassisSubsystem chassis;
     ExtenderSubsystem extender;
     GripperSubsystem gripper;
     LifterSubsystem lifter;
